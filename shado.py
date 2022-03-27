@@ -28,7 +28,7 @@ def wishMe():
     else:
         speak("Good Evening!")  
 
-    speak("I am Jarvis Sir. Please tell me how may I help you")       
+    speak("Hi Al I am Shado. Please tell me how may I help you")       
 
 def takeCommand():
     #It takes microphone input from the user and returns string output
@@ -94,16 +94,16 @@ if __name__ == "__main__":
             speak(f"Sir, the time is {strTime}")
 
         elif 'open code' in query:
-            codePath = "C:\\Users\\Haris\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+            codePath = "/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
             os.startfile(codePath)
 
         elif 'email to harry' in query:
             try:
                 speak("What should I say?")
                 content = takeCommand()
-                to = "harryyourEmail@gmail.com"    
+                to = "alvin.com@gmail.com"    
                 sendEmail(to, content)
                 speak("Email has been sent!")
             except Exception as e:
                 print(e)
-                speak("Sorry my friend harry bhai. I am not able to send this email")
+                speak("Sorry Al my friend . I am not able to send this email")
