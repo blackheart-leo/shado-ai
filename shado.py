@@ -12,6 +12,7 @@ from plyer import notification
 from bs4 import BeautifulSoup
 import requests
 from random import choice
+import os
 #from utils import opening_text
 
 engine = pyttsx3.init('nsss')
@@ -47,7 +48,35 @@ def takecommand():
         return query.lower()
 
 def TaskExe():
- 
+
+    def OpenApps():
+        Speak("Ok Sir , Just a moment")
+
+        if 'chrome' in query:
+            os.system("open /Applications/Google\ Chrome.app")
+            Speak("Opening Chrome")
+        
+        elif 'code' in query:
+            os.system("open /Applications/Visual\ Studio\ Code.app")
+            Speak("Opening V S Code")
+        
+        elif 'photoshop' in query:
+            os.system("open /Applications/Adobe\ Photoshop\ 2022/Adobe\ Photoshop\ 2022.app")
+            Speak("Opening Photoshop")
+        
+        elif 'safari' in query:
+            os.system("open /Applications/Safari.app")
+            Speak("Opening Safari")
+        
+        elif 'photos' in query:
+            os.system("open /System/Applications/Photos.app")
+            Speak("Opening Photos")
+
+        elif 'mail' in query:
+            os.system("open /System/Applications/Mail.app")
+            Speak("Opening Mail")
+          
+
     while True:
 
         query = takecommand()
@@ -101,7 +130,7 @@ def TaskExe():
             query = query.replace("search wikipedia", "")
             query = query.replace("for", "")
             Speak("Searching wikipedia for " + query)
-            url = "https://en.wikipedia.org/wiki/{query}"
+            url = "https://en.wikipedia.org/wiki/" + query
             webbrowser.open(url)
             Speak("Launching Wikipedia")
         
@@ -132,5 +161,23 @@ def TaskExe():
             ss = pyautogui.screenshot()
             ss.save(+ str(datetime.datetime.now()) + '.png')
             Speak("Screenshot taken")
+        
+        elif 'open chrome' in query:
+            OpenApps()
+        
+        elif 'open code' in query:
+            OpenApps()
+        
+        elif 'open photoshop' in query:
+            OpenApps()
+        
+        elif 'open safari' in query:
+            OpenApps()
+        
+        elif 'open photos' in query:
+            OpenApps()
+        
+        elif 'open mail' in query:
+            OpenApps()
 
 TaskExe()
