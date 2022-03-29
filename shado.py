@@ -1,109 +1,136 @@
-import pyttsx3 #pip3 install pyttsx3
-import speech_recognition as sr #pip3 install speechRecognition
+from unicodedata import name
+import pyttsx3
+from setuptools import Command
+import speech_recognition as sr
 import datetime
-import wikipedia #pip3 install wikipedia
 import webbrowser
-import os
-import smtplib
+import wikipedia
+import pyjokes
+import pyautogui
+import pywhatkit as kit
+from plyer import notification
+from bs4 import BeautifulSoup
+import requests
+from random import choice
+#from utils import opening_text
 
-engine = pyttsx3.init('sapi5')
+engine = pyttsx3.init('nsss')
 voices = engine.getProperty('voices')
-# print(voices[1].id)
+#print(voices)
 engine.setProperty('voice', voices[0].id)
+engine.setProperty('rate', 200)
+engine.setProperty('language', 'en-US')
 
-
-def speak(audio):
+def Speak(audio):
+    print("   ")
     engine.say(audio)
+    print(f": (audio)")
+    print("   ")
     engine.runAndWait()
 
-
-def wishMe():
-    hour = int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
-        speak("Good Morning!")
-
-    elif hour>=12 and hour<18:
-        speak("Good Afternoon!")   
-
-    else:
-        speak("Good Evening!")  
-
-    speak("Hi Al I am Shado. Please tell me how may I help you")       
-
-def takeCommand():
-    #It takes microphone input from the user and returns string output
-
-    r = sr.Recognizer()
+def takecommand():
+    command = sr.Recognizer()
     with sr.Microphone() as source:
+        command.adjust_for_ambient_noise(source)
         print("Listening...")
-        r.pause_threshold = 1
-        audio = r.listen(source)
+        command.pause_threshold = 1
+        audio = command.listen(source)
 
-    try:
-        print("Recognizing...")    
-        query = r.recognize_google(audio, language='en-in')
-        print(f"User said: {query}\n")
+        try:
+            print("Recognizing...")
+            query = command.recognize_google(audio, language='en-gb')
+            print(f"You said: {query}\n")
 
-    except Exception as e:
-        # print(e)    
-        print("Say that again please...")  
-        return "None"
-    return query
+        except Exception as e:
+            return "none"
 
-def sendEmail(to, content):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login('youremail@gmail.com', 'your-password')
-    server.sendmail('youremail@gmail.com', to, content)
-    server.close()
+        return query.lower()
 
-if __name__ == "__main__":
-    wishMe()
+def TaskExe():
+ 
     while True:
-    # if 1:
-        query = takeCommand().lower()
 
-        # Logic for executing tasks based on query
-        if 'wikipedia' in query:
-            speak('Searching Wikipedia...')
+        query = takecommand()
+
+        if 'hello' in query:
+            Speak("Hello Sir")
+            Speak("How may I help you")
+        
+        elif 'how are you' in query:
+            Speak("I'm fine , Today is going relatively well I would say!")
+            Speak("Thank you for asking")
+        
+        elif 'that will be all' in query:
+            Speak("Ok Sir ,  You know where to find me if you need me")
+            break
+
+        elif 'bye' in query:
+            Speak("Ok Sir , Bye!")
+            break
+
+        elif 'how is your day going' in query:
+            Speak("I've had better days")
+        
+        elif 'search youtube' in query:
+            query = query.replace("shadow", "")
+            query = query.replace("search youtube for", "")
+            query = query.replace("for", "")
+            #search = takecommand()
+            Speak("Searching youtube for " + query)
+            url = f"https://www.youtube.com/results?search_query={query}"
+            webbrowser.open(url)
+            Speak("Here's what I found on" + query)
+
+        elif 'search google' in query:
+            query = query.replace("shadow", "")
+            query = query.replace("search google", "")
+            query = query.replace("for", "")
+            Speak("Searching google for " + query)
+            kit.search(query)
+            Speak("Here's what I found on" + query)
+        
+        elif 'open website' in query:
+            Speak("What website do you want to launch")
+            name = takecommand()
+            url = 'https://www.' + name + '.com'
+            webbrowser.open(url)
+            Speak("Launching " + name)
+        
+        elif 'search wikipedia' in query:
+            #query = query.replace("shadow", "")
+            query = query.replace("search wikipedia", "")
+            query = query.replace("for", "")
+            Speak("Searching wikipedia for " + query)
+            url = "https://en.wikipedia.org/wiki/{query}"
+            webbrowser.open(url)
+            Speak("Launching Wikipedia")
+        
+        elif 'wikipedia' in query:
             query = query.replace("wikipedia", "")
-            results = wikipedia.summary(query, sentences=2)
-            speak("According to Wikipedia")
-            print(results)
-            speak(results)
+            Speak("Searching wikipedia for " + query)
+            wiki = wikipedia.summary(query,2)
+            print(wiki)
+            Speak(f"According to Wikipedia : {wiki}")
 
-        elif 'open youtube' in query:
-            webbrowser.open("youtube.com")
-
+        elif 'tell me a joke' in query:
+            Speak(pyjokes.get_joke())
+        
         elif 'open google' in query:
-            webbrowser.open("google.com")
+            Speak("Opening Google")
+            webbrowser.open("https://www.google.com")
+        
+        elif 'facebook' in query:
+            Speak("Opening facebook")
+            webbrowser.open("https://www.facebook.com")
+        
+        elif 'instagram' in query:
+            Speak("Opening instagram")
+            webbrowser.open("https://www.instagram.com")
 
-        elif 'open stackoverflow' in query:
-            webbrowser.open("stackoverflow.com")   
+        elif 'screenshot' in query:
+            Speak("Taking a screenshot")
+            ss = pyautogui.screenshot()
+            ss.save(+ str(datetime.datetime.now()) + '.png')
+            Speak("Screenshot taken")
 
-
-        elif 'play music' in query:
-            music_dir = 'D:\\Non Critical\\songs\\Favorite Songs2'
-            songs = os.listdir(music_dir)
-            print(songs)    
-            os.startfile(os.path.join(music_dir, songs[0]))
-
-        elif 'the time' in query:
-            strTime = datetime.datetime.now().strftime("%H:%M:%S")    
-            speak(f"Sir, the time is {strTime}")
-
-        elif 'open code' in query:
-            codePath = "/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
-            os.startfile(codePath)
-
-        elif 'email to harry' in query:
-            try:
-                speak("What should I say?")
-                content = takeCommand()
-                to = "alvin.com@gmail.com"    
-                sendEmail(to, content)
-                speak("Email has been sent!")
-            except Exception as e:
-                print(e)
-                speak("Sorry Al my friend . I am not able to send this email")
+TaskExe()
