@@ -9,7 +9,7 @@ from pywikihow import search_wikihow
 import pyjokes
 import pyautogui
 import pywhatkit as kit
-from plyer import notification
+#from plyer import notification
 from bs4 import BeautifulSoup
 import requests
 from random import choice
@@ -19,11 +19,8 @@ import keyboard
 from playsound import playsound
 from PyDictionary import PyDictionary as Diction
 
-#from utils import opening_text
-
 engine = pyttsx3.init('nsss')
 voices = engine.getProperty('voices')
-#print(voices)
 engine.setProperty('voice', voices[0].id)
 engine.setProperty('rate', 200)
 engine.setProperty('language', 'en-US')
