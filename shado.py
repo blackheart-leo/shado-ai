@@ -5,6 +5,7 @@ import speech_recognition as sr
 import datetime
 import webbrowser
 import wikipedia
+from pywikihow import search_wikihow
 import pyjokes
 import pyautogui
 import pywhatkit as kit
@@ -106,27 +107,21 @@ def TaskExe():
 
         if 'chrome' in query:
             os.system("osascript -e 'quit app \"Google Chrome\"'")
-            Speak("Closing Chrome")
         
         elif 'code' in query:
             os.system("osascript -e 'quit app \"Visual Studio Code\"'")
-            Speak("Closing V S Code")
         
         elif 'photoshop' in query:
             os.system("osascript -e 'quit app \"Adobe Photoshop\"'")
-            Speak("Closing Photoshop")
         
         elif 'safari' in query:
             os.system("osascript -e 'quit app \"Safari\"'")
-            Speak("Closing Safari")
         
         elif 'photos' in query:
             os.system("osascript -e 'quit app \"Photos\"'")
-            Speak("Closing Photos")
 
         elif 'email' in query:
             os.system("osascript -e 'quit app \"Mail\"'")
-            Speak("Closing Mail")
         
         elif 'one drive' in query:
             os.system("osascript -e 'quit app \"OneDrive\"'")
@@ -180,6 +175,9 @@ def TaskExe():
         elif 'theatre mode' in comm:
             keyboard.press_and_release('t')
             Speak("Video film mode")
+
+    def WhatsApp(number, message):
+        kit.sendwhatmsg_instantly(f"+1{number}", message)
 
     def Dict():
         Speak("Activated Dictionary")
@@ -240,6 +238,10 @@ def TaskExe():
         
         elif 'who are you' in query:
             playsound("sounds/Jarvis-Id.mp3")
+        
+        elif 'take a break' in query:
+            playsound("sounds/Jarvis-Goodbye.mp3")
+            break
 
         elif 'bye' in query:
             playsound("sounds/Jarvis-Goodbye.mp3")
@@ -365,7 +367,7 @@ def TaskExe():
         elif 'close one drive' in query:
             CloseApps()
         
-        elif 'youtube tools' in query:
+        elif 'music' in query:
             YoutubeAuto()
         
         elif 'dictionary' in query:
@@ -421,5 +423,25 @@ def TaskExe():
         
         elif 'temperature' in query:
             Temp()
+        
+        elif 'how to' in query:
+            playsound("sounds/Jarvis-Confirm.mp3")
+            Speak("Getting Data From The Internet")
+            op = query.replace("how to", "")
+            op = op.replace("Jarvis", "")
+            max_results = 1
+            how_to_func = search_wikihow(op, max_results)
+            assert len(how_to_func) == 1
+            how_to_func[0].print()
+            Speak(how_to_func[0].summary)
+        
+        elif "whatsapp message" in query:
+            Speak(
+                'On what number should I send the message sir? Please enter in the console: ')
+            number = input("Enter the number: ")
+            Speak("What is the message sir?")
+            message = takecommand().lower()
+            WhatsApp(number, message)
+            Speak("I've sent the message sir.")
 
 TaskExe()
