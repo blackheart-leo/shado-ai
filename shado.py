@@ -18,12 +18,14 @@ from PIL import Image
 import keyboard
 from playsound import playsound
 from PyDictionary import PyDictionary as Diction
+from utils import aiVoiceConfirm
 
 engine = pyttsx3.init('nsss')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
 engine.setProperty('rate', 200)
 engine.setProperty('language', 'en-US')
+aiVoices = "sounds/"
 
 def Speak(audio):
     print("   ")
@@ -36,11 +38,11 @@ def Speak(audio):
 def greet_user():
     hour = datetime.datetime.now().hour
     if (hour >= 1) and (hour <= 12):
-        playsound("sounds/Jarvis-On.mp3")
+        playsound(aiVoices + "ai_greeting_morning.mp3")
     elif (hour > 12) and (hour <= 16):
-        playsound("sounds/Jarvis-On.mp3")
+        playsound(aiVoices + "ai_greeting_afternoon.mp3")
     elif (hour > 16) and (hour <=24):
-        playsound("sounds/Jarvis-On.mp3")
+        playsound(aiVoices + "ai_greeting_evening.mp3")
 
 if __name__ == '__main__':
     greet_user()
@@ -69,38 +71,38 @@ def takecommand():
 def TaskExe():
 
     def OpenApps():
-        playsound("sounds/Jarvis-Confirm.mp3")
+        playsound(choice(aiVoiceConfirm))
 
         if 'chrome' in query:
             os.system("open /Applications/Google\ Chrome.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'code' in query:
             os.system("open /Applications/Visual\ Studio\ Code.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'photoshop' in query:
             os.system("open /Applications/Adobe\ Photoshop\ 2022/Adobe\ Photoshop\ 2022.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'safari' in query:
             os.system("open /Applications/Safari.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'photos' in query:
             os.system("open /System/Applications/Photos.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
         elif 'email' in query:
             os.system("open /System/Applications/Mail.app")
-            playsound("sounds/Jarvis-Email.mp3")
+            playsound(aiVoices + "Jarvis-Email.mp3")
         
         elif 'one drive' in query:
             os.system("open /Applications/OneDrive.app")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
     def CloseApps():
-        playsound("sounds/Jarvis-Confirm.mp3")
+        playsound(choice(aiVoiceConfirm))
 
         if 'chrome' in query:
             os.system("osascript -e 'quit app \"Google Chrome\"'")
@@ -208,18 +210,26 @@ def TaskExe():
         Speak("Dictionary deactivated")
 
     def screenshot():
-        playsound("sounds/Jarvis-Database.mp3")
+        playsound(aiVoices + "Jarvis-Database.mp3")
         ssname = takecommand()
         ssname = ssname.replace("save", "")
         ssname = ssname.replace("as", "")
         ssfilename = ssname + ".png"
         sspathname = "screenshots/" + ssfilename
         ss = pyautogui.screenshot()
-        playsound("sounds/Jarvis-Agree.mp3")
+        playsound(aiVoices + "Jarvis-Agree.mp3")
         ss.save(sspathname)
         Image.open(sspathname).show()
-        playsound("sounds/Jarvis-OnScreen.mp3")
+        playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
+    def get_latest_news():
+        news_headlines = []
+        res = requests.get(
+            f"https://newsapi.org/v2/top-headlines?country=in&apiKey=4443f87bd99547118358750d25d7fc89&category=general").json()
+        articles = res["articles"]
+        for article in articles:
+            news_headlines.append(article["title"])
+        return news_headlines[:5]
 
     while True:
 
@@ -234,14 +244,21 @@ def TaskExe():
             Speak("Thank you for asking")
         
         elif 'who are you' in query:
-            playsound("sounds/Jarvis-Id.mp3")
+            playsound(aiVoices + "ai_intro_i-am-jarvis.mp3")
+        
+        elif 'back' in query:
+            playsound(aiVoices + "ai_greeting_welcome-home.mp3")
         
         elif 'take a break' in query:
-            playsound("sounds/Jarvis-Goodbye.mp3")
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
             break
 
         elif 'bye' in query:
-            playsound("sounds/Jarvis-Goodbye.mp3")
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'goodnight' in query:
+            playsound(aiVoices + "ai_bye_goodnight.mp3")
             break
 
         elif 'how is your day going' in query:
@@ -255,7 +272,7 @@ def TaskExe():
             Speak("Searching youtube for " + query)
             url = f"https://www.youtube.com/results?search_query={query}"
             webbrowser.open(url)
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
             Speak("Here's what I found on" + query)
         
         elif 'search amazon' in query:
@@ -265,7 +282,7 @@ def TaskExe():
             url = f"https://www.amazon.com/s?k={query}"
             webbrowser.open(url)
             Speak("Here's what I found on amazon for" + query)
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
         elif 'search google' in query:
             query = query.replace("shadow", "")
@@ -273,7 +290,7 @@ def TaskExe():
             query = query.replace("for", "")
             Speak("Searching google for " + query)
             kit.search(query)
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
             Speak("Here's what I found on" + query)
         
         elif 'open website' in query:
@@ -281,7 +298,7 @@ def TaskExe():
             name = takecommand()
             url = 'https://www.' + name + '.com'
             webbrowser.open(url)
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'search wikipedia' in query:
             query = query.replace("Jarvis", "")
@@ -290,7 +307,7 @@ def TaskExe():
             Speak("Searching wikipedia for " + query)
             url = "https://en.wikipedia.org/wiki/" + query
             webbrowser.open(url)
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'wikipedia' in query:
             query = query.replace("Jarvis", "")
@@ -299,25 +316,27 @@ def TaskExe():
             wiki = wikipedia.summary(query,2)
             print(wiki)
             Speak(f"According to Wikipedia : {wiki}")
+        
+        
 
         elif 'tell me a joke' in query:
             Speak(pyjokes.get_joke())
         
         elif 'open google' in query:
             webbrowser.open("https://www.google.com")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'open facebook' in query:
             webbrowser.open("https://www.facebook.com")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'instagram' in query:
             webbrowser.open("https://www.instagram.com")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
         elif 'open portal' in query:
             webbrowser.open("https://blumediaconsultants.com/portal/")
-            playsound("sounds/Jarvis-OnScreen.mp3")
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
         elif 'screenshot' in query:
             screenshot()
@@ -379,26 +398,27 @@ def TaskExe():
                 now = Time_Ac.strftime("%H:%M:%S")
 
                 if now == time:
-                    playsound("sounds/Jarvis-Alarm.mp3")
+                    playsound(aiVoices + "Jarvis-Alarm.mp3")
                     
                 elif now>time:
                     break
         
         elif 'speech' in query:
             query = query.replace("Jarvis", "")
-            playsound("sounds/Jarvis-Confirm.mp3")
-            playsound("sounds/MyOnlyWish.mp3")
+            playsound(aiVoices + "ai_confirm_my-pleasure.mp3")
+            playsound(aiVoices + "MyOnlyWish.mp3")
                     
         elif 'remind me that' in query:
             rememberMsg = query.replace("remind me that", "")
             rememberMsg = rememberMsg.replace("Jarvis", "")
             rememberMsg = rememberMsg.replace("i", "you")
-            playsound("sounds/Jarvis-Confirm.mp3")
+            playsound(aiVoices + "ai_confirm_affirmative.mp3")
             Speak("You told me to remember that : " + rememberMsg)
             remember = open('data.txt','w')
             remember.write(rememberMsg)
 
         elif 'to remember' in query:
+            playsound('sounds/ai_reminder.mp3')
             remember = open('data.txt','r')
             Speak("Remember that : " + remember.read())
 
@@ -407,11 +427,12 @@ def TaskExe():
             query = query.replace("Jarvis", "")
             query = query.replace("search", "")
             query = query.replace("for", "")
-            playsound("sounds/Jarvis-Confirm.mp3")
+            playsound(aiVoices + "ai_confirm_affirmative.mp3")
+            playsound(aiVoices + "ai-bleep.mp3")
 
             try:
                 kit.search(query)
-                playsound("sounds/Jarvis-OnScreen.mp3")
+                playsound(aiVoices + "Jarvis-OnScreen.mp3")
                 result = googleScrap.summary(query, 3)
                 Speak(result)
 
@@ -422,7 +443,7 @@ def TaskExe():
             Temp()
         
         elif 'how to' in query:
-            playsound("sounds/Jarvis-Confirm.mp3")
+            playsound(aiVoices + "ai-instructions.mp3")
             Speak("Getting Data From The Internet")
             op = query.replace("how to", "")
             op = op.replace("Jarvis", "")
