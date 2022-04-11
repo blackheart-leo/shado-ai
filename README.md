@@ -1,2 +1,2 @@
 # shado-ai
-Shado AI
+Nexus AI - run using ai.py
