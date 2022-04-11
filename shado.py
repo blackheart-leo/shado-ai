@@ -8,8 +8,9 @@ import wikipedia
 from pywikihow import search_wikihow
 import pyjokes
 import pyautogui
+import keyboard as kb
 import pywhatkit as kit
-#from plyer import notification
+from plyer import notification
 from bs4 import BeautifulSoup
 import requests
 from random import choice
@@ -19,42 +20,123 @@ import keyboard
 from playsound import playsound
 from PyDictionary import PyDictionary as Diction
 from utils import aiVoiceConfirm
+from time import localtime
+import psutil
+import math
 
 engine = pyttsx3.init('nsss')
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[0].id)
-engine.setProperty('rate', 200)
+engine.setProperty('voice', voices[7].id)
+volume = engine.getProperty('volume')
+engine.setProperty('volume', 0.8)
+voicespeed = 200
+engine.setProperty('rate', voicespeed)
 engine.setProperty('language', 'en-US')
 aiVoices = "sounds/"
 
 def Speak(audio):
     print("   ")
     engine.say(audio)
-    print(f": (Jarvis is Speaking ...)")
+    print(f": Nexus: ")
     print("   ")
     engine.runAndWait()
+
+def nexus():
+    print("      ___           __")  
+    print("|\ | |__  \_/ |  | /__`") 
+    print("| \| |___ / \ \__/ .__/")
+    print("Nexus A.I. by Alvin Herbert (c) 2022") 
+                        
+#Nexus Dat, Time, Day
+def Date():
+    date = datetime.datetime.today().strftime("%d/%m/%Y")
+    Speak(date)
+
+def Day():
+    day = datetime.datetime.now().strftime("%A")
+    Speak("Today is " + day)
+
+def Time():
+    hr = localtime()[3]
+    min = localtime()[4]
+    if hr > 12:
+        hr = hr - 12
+        ampm = "PM"
+    else:
+        ampm = "AM"
+    response = "It's " + str(hr) + " " + str(min) + " " + ampm
+    Speak(response)
 
 # Greet the user
 def greet_user():
     hour = datetime.datetime.now().hour
     if (hour >= 1) and (hour <= 12):
-        playsound(aiVoices + "ai_greeting_morning.mp3")
+        Speak("Good Morning, Sir")
+        Time()
+        Day()
+        Date()
+        
     elif (hour > 12) and (hour <= 16):
-        playsound(aiVoices + "ai_greeting_afternoon.mp3")
+        Speak("Good Afternoon, Sir")
+        Time()
+        Day()
+        Date()
     elif (hour > 16) and (hour <=24):
-        playsound(aiVoices + "ai_greeting_evening.mp3")
+        Speak("Good Evening, Sir")
+        Time()
+        Day()
+        Date()
+
+def convert_size(size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        print("%s %s" % (s, size_name[i]))
+        return "%s %s" % (s, size_name[i])
+    
+def SystemInfo():
+    cpu_stats = str(psutil.cpu_percent())
+    battery_percent = psutil.sensors_battery().percent
+    memory_in_use = convert_size(psutil.virtual_memory().used)
+    total_memory = convert_size(psutil.virtual_memory().total)
+    final_res = f"Currently we're running at {cpu_stats} percent of CPU power, {memory_in_use} of RAM out of total {total_memory}  is being used and battery level is at {battery_percent} percent"
+    Speak(final_res)
+    battery = psutil.sensors_battery()
+    plugged = battery.power_plugged
+    plugged = "Plugged In" if plugged else "Not Plugged In"
+    if (battery_percent <= 20) and (plugged == "Not Plugged In"): 
+        Speak("Power level is critical, I suggest recharging to prevent shutdown")
+    
+    elif (battery_percent <= 20) and (plugged == "Plugged In"):
+        Speak("Power level is critical however it's being restored")
+
+    elif (battery_percent <= 50) and (battery_percent > 20) and (plugged == "Not Plugged In"):
+        Speak("Power level is a bit depleted but I'll make it work, I know you're busy but don't forget to recharge when you can")
+    
+    elif(battery_percent <= 50) and (battery_percent > 20) and (plugged == "Plugged In"):
+        Speak("Power level is a bit depleted , restoring level to optimal performance")
+    
+    else:
+        Speak("Power level is optimal for top performance")
 
 if __name__ == '__main__':
+    nexus()
     greet_user()
+    SystemInfo()
 
+#Voice recognision listener
 def takecommand():
     command = sr.Recognizer()
     with sr.Microphone() as source:
         command.adjust_for_ambient_noise(source)
         print("Listening...")
         command.pause_threshold = 1
+        command.adjust_for_ambient_noise(source)
         command.dynamic_energy_threshold = False
-        audio = command.listen(source)
+        audio = command.listen(source,0,4)
 
         try:
             print("Recognizing...")
@@ -63,10 +145,10 @@ def takecommand():
 
         except Exception as e:
             print(e)
-            print("Say that again please...")
-            return "None"
+            return ""
 
         return query.lower()
+
 
 def TaskExe():
 
@@ -179,31 +261,18 @@ def TaskExe():
         kit.sendwhatmsg_instantly(f"+1{number}", message)
 
     def Dict():
-        Speak("Activated Dictionary")
-        Speak("What's your word?")
-        word = takecommand()
-        
-        if 'meaning' in word:
-            word = word.replace("what is the", "")
-            word = word.replace("meaning", "")
-            word = word.replace("of", "")
-            word = word.replace("Jarvis", "")
+        if 'meaning' in query:
+            word = str(query).replace("what","").replace("is","").replace("the","").replace("meaning", "").replace("of", "").replace("Nexus", "")
             meaning = Diction.meaning(word)
             Speak(f"The meaning of {word} is {meaning}")
         
-        elif 'synonym' in word:
-            word = word.replace("what is the", "")
-            word = word.replace("synonym", "")
-            word = word.replace("of", "")
-            word = word.replace("Jarvis", "")
+        elif 'synonym' in query:
+            word = str(query).replace("what","").replace("is","").replace("the","").replace("synonym", "").replace("of", "").replace("Nexus", "")
             synonym = Diction.synonym(word)
             Speak(f"The synonym of {word} is {synonym}")
         
-        elif 'antonym' in word:
-            word = word.replace("what is the", "")
-            word = word.replace("antonym", "")
-            word = word.replace("of", "")
-            word = word.replace("Jarvis", "")
+        elif 'antonym' in query:
+            word = str(query).replace("what","").replace("is","").replace("the","").replace("antonym", "").replace("of", "").replace("Nexus", "")
             antonym = Diction.antonym(word)
             Speak(f"The antonym of {word} is {antonym}")
 
@@ -214,58 +283,16 @@ def TaskExe():
         ssname = takecommand()
         ssname = ssname.replace("save", "")
         ssname = ssname.replace("as", "")
-        ssfilename = ssname + ".png"
-        sspathname = "screenshots/" + ssfilename
+        sspathname = "screenshots/" + ssname
         ss = pyautogui.screenshot()
         playsound(aiVoices + "Jarvis-Agree.mp3")
-        ss.save(sspathname)
+        ss.save(sspathname, 'png')
         Image.open(sspathname).show()
         playsound(aiVoices + "Jarvis-OnScreen.mp3")
-
-    def get_latest_news():
-        news_headlines = []
-        res = requests.get(
-            f"https://newsapi.org/v2/top-headlines?country=in&apiKey=4443f87bd99547118358750d25d7fc89&category=general").json()
-        articles = res["articles"]
-        for article in articles:
-            news_headlines.append(article["title"])
-        return news_headlines[:5]
-
-    while True:
-
-        query = takecommand()
-
-        if 'hello' in query:
-            Speak("Hello Sir")
-            Speak("How may I help you")
-        
-        elif 'how are you' in query:
-            Speak("I'm fine , Today is going relatively well I would say!")
-            Speak("Thank you for asking")
-        
-        elif 'who are you' in query:
-            playsound(aiVoices + "ai_intro_i-am-jarvis.mp3")
-        
-        elif 'back' in query:
-            playsound(aiVoices + "ai_greeting_welcome-home.mp3")
-        
-        elif 'take a break' in query:
-            playsound(aiVoices + "Jarvis-Goodbye.mp3")
-            break
-
-        elif 'bye' in query:
-            playsound(aiVoices + "Jarvis-Goodbye.mp3")
-            break
-
-        elif 'goodnight' in query:
-            playsound(aiVoices + "ai_bye_goodnight.mp3")
-            break
-
-        elif 'how is your day going' in query:
-            Speak("I've had better days")
-        
-        elif 'search youtube' in query:
-            query = query.replace("shadow", "")
+ 
+    def Search():   
+        if 'youtube' in query:
+            query = query.replace("nexus", "")
             query = query.replace("search youtube for", "")
             query = query.replace("for", "")
             #search = takecommand()
@@ -275,7 +302,8 @@ def TaskExe():
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
             Speak("Here's what I found on" + query)
         
-        elif 'search amazon' in query:
+        elif 'amazon' in query:
+            query = query.replace("nexus", "")
             query = query.replace("search amazon for", "")
             query = query.replace("for", "")
             Speak("Searching amazon for " + query)
@@ -283,98 +311,222 @@ def TaskExe():
             webbrowser.open(url)
             Speak("Here's what I found on amazon for" + query)
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
+        
+        elif 'etsy' in query:
+            query = query.replace("nexus", "")
+            query = query.replace("search etsy for", "")
+            query = query.replace("for", "")
+            Speak("Searching etsy for " + query)
+            url = f"https://www.etsy.com/search?q={query}"
+            webbrowser.open(url)
+            Speak("Here's what I found on etsy for" + query)
+            playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
-        elif 'search google' in query:
-            query = query.replace("shadow", "")
+    def Network():
+        url = "http://www.google.com"
+        timeout = 5
+        try:
+            request = requests.get(url, timeout=timeout)
+            Speak("Internet connection detected")
+        except (requests.ConnectionError, requests.Timeout) as exception:
+            Speak("Not internet connection detected")
+
+
+    while True:
+
+        query = takecommand()
+        #Nexus greetings
+        if 'hello' in query and 'nexus' in query:
+            from utils import greetings
+            Speak(choice(greetings))
+        
+        elif 'how are you' in query:
+            from utils import mood
+            Speak(choice(mood))
+        
+        elif 'fine' in query:
+            from utils import greet_response
+            Speak(choice(greet_response))
+        
+        elif 'who are you' in query:
+            playsound(aiVoices + "ai_intro_i-am-Nexus.mp3")
+        
+        elif 'back' in query and 'nexus' in query:
+            playsound(aiVoices + "ai_greeting_welcome-home.mp3")
+        
+        #Nexus shutdown
+        elif 'take a break' in query and 'nexus' in query:
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'bye' in query and 'nexus' in query:
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'shut down' in query and 'nexus' in query:
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'shutdown' in query and 'nexus' in query:
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'goodnight' in query and 'nexus' in query:
+            playsound(aiVoices + "ai_bye_goodnight.mp3")
+            break
+
+        elif 'offline' in query and 'nexus' in query:
+            Speak("initiating shutdown sequence")
+            playsound(aiVoices + "Jarvis-Goodbye.mp3")
+            break
+
+        elif 'how is your day going' in query:
+            Speak("I've had better days")
+        
+        #Nexus searching
+        elif 'youtube' in query and 'nexus' in query:
+            Search()
+        
+        elif 'amazon' in query and 'nexus' in query:
+            Search()
+        
+        elif 'etsy' in query and 'nexus' in query:
+            Search()
+
+        elif 'search google' in query and 'nexus' in query:
+            query = query.replace("nexus", "")
             query = query.replace("search google", "")
             query = query.replace("for", "")
             Speak("Searching google for " + query)
+            print("Gathering data from Google ...")
             kit.search(query)
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
             Speak("Here's what I found on" + query)
         
-        elif 'open website' in query:
+        elif 'open website' in query and 'nexus' in query:
             Speak("What website do you want to launch")
             name = takecommand()
             url = 'https://www.' + name + '.com'
             webbrowser.open(url)
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'search wikipedia' in query:
-            query = query.replace("Jarvis", "")
+        elif 'search wikipedia' in query and 'nexus' in query:
+            query = query.replace("nexus", "")
             query = query.replace("search wikipedia", "")
             query = query.replace("for", "")
             Speak("Searching wikipedia for " + query)
+            print("Gathering data from Wikipedia ...")
             url = "https://en.wikipedia.org/wiki/" + query
             webbrowser.open(url)
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'wikipedia' in query:
-            query = query.replace("Jarvis", "")
+        elif 'who is' in query or 'what is' in query or 'what are' in query and 'nexus' in query:
+            query = query.replace("nexus", "")
             query = query.replace("wikipedia", "")
-            Speak("Searching wikipedia for " + query)
-            wiki = wikipedia.summary(query,2)
-            print(wiki)
-            Speak(f"According to Wikipedia : {wiki}")
-        
-        
+            query = query.replace("what is", "")
+            query = query.replace("what are", "")
+            query = query.replace("who is", "")
 
-        elif 'tell me a joke' in query:
+            try:
+                Speak("Searching wikipedia for " + query)
+                print("Gathering data from wikipedia ...")
+                wiki = wikipedia.summary(query,2)
+                print(wiki)
+                Speak(f"According to Wikipedia : {wiki}")
+
+            except:
+                Speak("Sorry Sir, I've found nothing on wikipedia for " + query)
+
+        elif 'internet' in query and 'nexus' in query:
+            Network()
+        #Tab operations
+        elif 'open tab' in query and 'nexus' in query:
+            kb.press_and_release('Cmd + T')
+            Speak("Tab opened")
+
+        elif 'close tab' in query and 'nexus' in query:
+            kb.press_and_release('Cmd + W')
+            Speak("Tab closed")
+        
+        elif 'spotlight' in query and 'nexus' in query:
+            kb.press_and_release('Cmd + Space')
+            Speak("Done Sir!")
+        
+        elif 'incognito' in query and 'nexus' in query:
+            kb.press_and_release('Cmd + Shift + N')
+        
+        #delete operations
+        elif 'delete' in query and 'nexus' in query and 'email' in query:
+            Speak("Deleting selected emails")
+            kb.press_and_release('delete')
+        
+        elif 'delete' in query and 'nexus' in query and 'file' in query:
+            Speak("Deleting selected files")
+            kb.press_and_release('Cmd + delete')
+        
+        elif 'delete' in query and 'nexus' in query and 'folder' in query:
+            Speak("Deleting selected folders")
+            kb.press_and_release('Cmd + delete')
+        
+        elif 'system status' in query and 'nexus' in query:
+            SystemInfo()
+
+        elif 'tell me a joke' in query and 'nexus' in query:
             Speak(pyjokes.get_joke())
         
-        elif 'open google' in query:
+        elif 'open google' in query and 'nexus' in query:
             webbrowser.open("https://www.google.com")
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'open facebook' in query:
+        elif 'open facebook' in query and 'nexus' in query:
             webbrowser.open("https://www.facebook.com")
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'instagram' in query:
+        elif 'instagram' in query and 'nexus' in query:
             webbrowser.open("https://www.instagram.com")
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'open portal' in query:
+        elif 'open portal' in query and 'nexus' in query:
             webbrowser.open("https://blumediaconsultants.com/portal/")
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
 
-        elif 'screenshot' in query:
+        elif 'screenshot' in query and 'nexus' in query:
             screenshot()
         
-        elif 'open chrome' in query:
+        elif 'open chrome' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close chrome' in query:
+        elif 'close chrome' in query and 'nexus' in query:
             CloseApps()
         
-        elif 'open code' in query:
+        elif 'open code' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close code' in query:
+        elif 'close code' in query and 'nexus' in query:
             CloseApps()
         
-        elif 'open photoshop' in query:
+        elif 'open photoshop' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close photoshop' in query:
+        elif 'close photoshop' in query and 'nexus' in query:
             CloseApps()
         
-        elif 'open safari' in query:
+        elif 'open safari' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close safari' in query:
+        elif 'close safari' in query and 'nexus' in query:
             CloseApps()
         
-        elif 'open photos' in query:
+        elif 'open photos' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close photos' in query:
+        elif 'close photos' in query and 'nexus' in query:
             CloseApps()
         
-        elif 'open email' in query:
+        elif 'open email' in query and 'nexus' in query:
             OpenApps()
         
-        elif 'close email' in query:
+        elif 'close email' in query and 'nexus' in query:
             CloseApps()
         
         elif 'open one drive' in query:
@@ -386,10 +538,16 @@ def TaskExe():
         elif 'music' in query:
             YoutubeAuto()
         
-        elif 'dictionary' in query:
+        elif 'meaning' in query:
             Dict()
         
-        elif 'alarm' in query:
+        elif 'synonym' in query:
+            Dict()
+        
+        elif 'antonym' in query:
+            Dict()
+        
+        elif 'alarm' in query and 'set' in query and 'nexus' in query:
             Speak("Enter The Time")
             time = input(": Enter the time :")
 
@@ -403,28 +561,28 @@ def TaskExe():
                 elif now>time:
                     break
         
-        elif 'speech' in query:
-            query = query.replace("Jarvis", "")
+        elif 'speech' in query and 'nexus' in query:
+            query = query.replace("Nexus", "")
             playsound(aiVoices + "ai_confirm_my-pleasure.mp3")
             playsound(aiVoices + "MyOnlyWish.mp3")
                     
-        elif 'remind me that' in query:
+        elif 'remind me that' in query and 'nexus' in query:
             rememberMsg = query.replace("remind me that", "")
-            rememberMsg = rememberMsg.replace("Jarvis", "")
+            rememberMsg = rememberMsg.replace("Nexus", "")
             rememberMsg = rememberMsg.replace("i", "you")
             playsound(aiVoices + "ai_confirm_affirmative.mp3")
             Speak("You told me to remember that : " + rememberMsg)
             remember = open('data.txt','w')
             remember.write(rememberMsg)
 
-        elif 'to remember' in query:
+        elif 'to remember' in query and 'nexus' in query:
             playsound('sounds/ai_reminder.mp3')
             remember = open('data.txt','r')
             Speak("Remember that : " + remember.read())
 
         elif 'search for' in query:
             import wikipedia as googleScrap
-            query = query.replace("Jarvis", "")
+            query = query.replace("Nexus", "")
             query = query.replace("search", "")
             query = query.replace("for", "")
             playsound(aiVoices + "ai_confirm_affirmative.mp3")
@@ -439,14 +597,14 @@ def TaskExe():
             except:
                 Speak("Sorry, I can't find anything")
         
-        elif 'temperature' in query:
+        elif 'temperature' in query and 'nexus' in query:
             Temp()
         
-        elif 'how to' in query:
+        elif 'how to' in query and 'nexus' in query:
             playsound(aiVoices + "ai-instructions.mp3")
             Speak("Getting Data From The Internet")
             op = query.replace("how to", "")
-            op = op.replace("Jarvis", "")
+            op = op.replace("Nexus", "")
             max_results = 1
             how_to_func = search_wikihow(op, max_results)
             assert len(how_to_func) == 1
@@ -461,5 +619,58 @@ def TaskExe():
             message = takecommand().lower()
             WhatsApp(number, message)
             Speak("I've sent the message sir.")
+        
+        elif "time" in query and 'nexus' in query:
+            Time()
+        
+        elif "date" in query and 'nexus' in query:
+            Date()
+        
+        elif "day" in query and 'nexus' in query:
+            Day()
+
+        elif query.split(" ")[0] == "convert": #convert 10 inches to metres
+            conversionDict = {
+                "inches":39.3701, "feet":3.2808, 
+                "kilometres":.001,"metres":1, 
+                "decimetres":10, "centimetres":100,
+                "millimetres":1000, "yards":1.0936, "miles":0.0006213}
+            
+            brevDict = {
+                "in":"inches", 
+                "inch":"inches", 
+                "inches":"inches", 
+                "ft":"feet",
+                "foot":"feet",
+                "feet":"feet", 
+                "km":"kilometres", 
+                "kilometre":"kilometres", 
+                "kilometres":"kilometres", 
+                "m":"metres", 
+                "metre":"metres", 
+                "metres":"metres", 
+                "dm":"decimetres", 
+                "decimetre":"decimetres", 
+                "decimetres":"decimetres", 
+                "cm":"centimetres", 
+                "centimetre":"centimters",
+                "centimetres":"centimetres", 
+                "mm":"millimetres", 
+                "millimetre":"millimetres", 
+                "millimetres":"millimetres", 
+                "yd":"yards", "yard":"yards", 
+                "yards":"yards", 
+                "miles":"miles", 
+                "mile":"miles"}
+            try:
+                val = float(query.split(" ")[1])
+                unit1 = brevDict[query.split(" ")[2]]
+                unit2 = query.split(" ")[4]
+                            
+                conversion = float(conversionDict[unit2]) / float(conversionDict[unit1])
+                response = str(val) + " " + unit1 + " equals " + str(round(val*conversion,3)) + "  " + unit2
+                Speak(response)
+            except:
+                print("Sorry, I didn't understand that.")
 
 TaskExe()
