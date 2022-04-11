@@ -35,7 +35,6 @@ engine.setProperty('language', 'en-US')
 aiVoices = "sounds/"
 
 def Speak(audio):
-    
     print("   ")
     engine.say(audio)
     print(f": Nexus: ")
