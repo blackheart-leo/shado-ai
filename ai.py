@@ -6,6 +6,7 @@ from playsound import playsound
 
 aiVoices = "sounds/"
 
+
 def takecommand():
     command = sr.Recognizer()
     with sr.Microphone() as source:
@@ -26,17 +27,18 @@ def takecommand():
 
         return query.lower()
 
+
 while True:
 
     wake_Up = takecommand()
 
     if 'initiate' in wake_Up or 'you there' in wake_Up or 'on' in wake_Up and 'nexus' in wake_Up:
         print("Initiating Nexus...")
-        call(["python3", "shado.py"])
+        call(["python3", "nexus.py"])
 
     else:
         print("")
-    
+
     if 'kill' in wake_Up or 'shutdown' in wake_Up or 'terminate' in wake_Up or 'shut down' in wake_Up or 'exit' in wake_Up and 'nexus' in wake_Up:
         playsound(aiVoices + "ai-power_down.mp3")
         playsound(aiVoices + "Jarvis-Goodbye.mp3")

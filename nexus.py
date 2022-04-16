@@ -71,21 +71,25 @@ def Time():
 def greet_user():
     hour = datetime.datetime.now().hour
     if (hour >= 1) and (hour <= 12):
-        Speak("Good Morning, Sir")
+        Speak("Good Morning Sir")
         Time()
         Day()
         Date()
+        Speak("All Nexus systems are online and ready Sir!")
         
     elif (hour > 12) and (hour <= 16):
-        Speak("Good Afternoon, Sir")
+        Speak("Good Afternoon Sir")
         Time()
         Day()
         Date()
+        Speak("All Nexus systems are online and ready Sir!")
+
     elif (hour > 16) and (hour <=24):
-        Speak("Good Evening, Sir")
+        Speak("Good Evening Sir")
         Time()
         Day()
         Date()
+        Speak("All Nexus systems are online and ready Sir!")
 
 def convert_size(size_bytes):
         if size_bytes == 0:
@@ -349,7 +353,7 @@ def TaskExe():
             Speak(choice(greet_response))
         
         elif 'who are you' in query:
-            playsound(aiVoices + "ai_intro_i-am-Nexus.mp3")
+            Speak("Allow me to introduce myself, I am Nexus!")
         
         elif 'back' in query and 'nexus' in query:
             playsound(aiVoices + "ai_greeting_welcome-home.mp3")
@@ -420,10 +424,10 @@ def TaskExe():
             webbrowser.open(url)
             playsound(aiVoices + "Jarvis-OnScreen.mp3")
         
-        elif 'who is' in query or 'what is' in query or 'what are' in query and 'nexus' in query:
+        elif 'who is' in query or 'what is a' in query or 'what are' in query and 'nexus' in query:
             query = query.replace("nexus", "")
             query = query.replace("wikipedia", "")
-            query = query.replace("what is", "")
+            query = query.replace("what is a", "")
             query = query.replace("what are", "")
             query = query.replace("who is", "")
 
@@ -439,6 +443,7 @@ def TaskExe():
 
         elif 'internet' in query and 'nexus' in query:
             Network()
+        
         #Tab operations
         elif 'open tab' in query and 'nexus' in query:
             kb.press_and_release('Cmd + T')
