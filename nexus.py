@@ -68,7 +68,7 @@ def Time():
     Speak(response)
 
 # Greet the user
-def greet_user():
+def GreetUser():
     hour = datetime.datetime.now().hour
     if (hour >= 1) and (hour <= 12):
         Speak("Good Morning Sir")
@@ -128,7 +128,7 @@ def SystemInfo():
 
 if __name__ == '__main__':
     nexus()
-    greet_user()
+    GreetUser()
     SystemInfo()
 
 #Voice recognision listener

@@ -32,7 +32,7 @@ while True:
 
     wake_Up = takecommand()
 
-    if 'initiate' in wake_Up or 'you there' in wake_Up or 'on' in wake_Up and 'nexus' in wake_Up:
+    if 'initiate' in wake_Up or 'wakeup' in wake_Up or 'wake up' in wake_Up or 'you there' in wake_Up or 'on' in wake_Up and 'nexus' in wake_Up:
         print("Initiating Nexus...")
         call(["python3", "nexus.py"])
 
