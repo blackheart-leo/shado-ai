@@ -1,7 +1,6 @@
 from subprocess import call
 import speech_recognition as sr
 from utils import aiVoiceConfirm
-import datetime
 from playsound import playsound
 
 aiVoices = "sounds/"
@@ -14,7 +13,7 @@ def takecommand():
         print("Nexus is on standby...")
         command.pause_threshold = 1
         command.dynamic_energy_threshold = False
-        audio = command.listen(source)
+        audio = command.listen(source,0,4)
 
         try:
             print("Recognizing...")
@@ -32,7 +31,7 @@ while True:
 
     wake_Up = takecommand()
 
-    if 'initiate' in wake_Up or 'wakeup' in wake_Up or 'wake up' in wake_Up or 'you there' in wake_Up or 'on' in wake_Up and 'nexus' in wake_Up:
+    if 'initiate' in wake_Up or 'wakeup' in wake_Up or 'wake up' in wake_Up or 'you there' in wake_Up or 'on' in wake_Up or 'hi' in wake_Up or 'good morning' in wake_Up and 'nexus' in wake_Up:
         print("Initiating Nexus...")
         call(["python3", "nexus.py"])
 

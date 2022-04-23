@@ -69,22 +69,22 @@ def Time():
 
 # Greet the user
 def GreetUser():
-    hour = datetime.datetime.now().hour
-    if (hour >= 1) and (hour <= 12):
+    hr = datetime.datetime.now().hour
+    if (hr >= 1) and (hr <= 12):
         Speak("Good Morning Sir")
         Time()
         Day()
         Date()
         Speak("All Nexus systems are online and ready Sir!")
         
-    elif (hour > 12) and (hour <= 16):
+    elif (hr > 12) and (hr <= 16):
         Speak("Good Afternoon Sir")
         Time()
         Day()
         Date()
         Speak("All Nexus systems are online and ready Sir!")
 
-    elif (hour > 16) and (hour <=24):
+    elif (hr > 16) and (hr <=24):
         Speak("Good Evening Sir")
         Time()
         Day()
