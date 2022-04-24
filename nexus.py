@@ -70,7 +70,7 @@ def Time():
 # Greet the user
 def GreetUser():
     hr = datetime.datetime.now().hour
-    if (hr >= 1) and (hr <= 12):
+    if (hr <= 1) and (hr <= 12):
         Speak("Good Morning Sir")
         Time()
         Day()
